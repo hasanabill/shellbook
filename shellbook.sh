@@ -1,24 +1,23 @@
 #!/bin/bash
 
-# Initialize user database (a text file)
+# user txt file
 user_database="users.txt"
 touch "$user_database"
 
-# Initialize posts database (a text file)
+# timeline txt file
 post_database="posts.txt"
 touch "$post_database"
 
-
-# Directory to store user-specific messages
+# messages directory
 message_directory="messages"
 mkdir -p "$message_directory"
 
-# Function to register a new user
+# register 
 register_user() {
     echo "Enter your username:"
     read username
 
-    # Check if the username already exists
+    # if exists
     if grep -q "^$username:" "$user_database"; then
         echo "Username already exists. Please choose a different one."
         return
@@ -30,18 +29,18 @@ register_user() {
     echo "Registration successful. You can now log in."
 }
 
-# Function to log in
+# log in
 login() {
     clear
     echo "Enter your username:"
     read username
 
-    # Check if the username exists
+    # if user exists
     if grep -q "^$username:" "$user_database"; then
         echo "Enter your password:"
         read -s password
 
-        # Verify the password
+        # verify pass
         if grep -q "^$username:$password" "$user_database"; then
             echo "Login successful."
             menu
@@ -53,13 +52,13 @@ login() {
     fi
 }
 
-# Function to send a message
+# send a message
 send_message() {
     clear
     echo "Enter the recipient's username:"
     read recipient
 
-    # Check if the recipient exists
+    # if exists
     if ! grep -q "^$recipient:" "$user_database"; then
         echo "Recipient not found."
         return
@@ -68,12 +67,12 @@ send_message() {
     echo "Enter your message:"
     read message
 
-    # Save the message to the recipient's message file
+    # Save the message
     echo "$(date '+%Y-%m-%d %H:%M:%S') $username: $message" >> "$message_directory/$recipient.txt"
     echo "Message sent to $recipient."
 }
 
-# Function to view messages
+# view messages
 view_messages() {
     clear
     echo "Your messages:"
@@ -82,7 +81,7 @@ view_messages() {
 }
 
 
-# Function to post an update
+# post an update
 post_update() {
     clear
     echo "Enter your update:"
@@ -91,7 +90,7 @@ post_update() {
     echo "Update posted."
 }
 
-# Function to view the timeline
+# view the timeline
 view_timeline() {
     clear
     echo "Timeline:"
@@ -124,7 +123,7 @@ menu() {
     done
 }
 
-# Main program loop
+# Main
 while true; do
     clear
     echo "ShellBook"
