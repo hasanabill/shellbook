@@ -8,10 +8,10 @@ touch "$user_database"
 post_database="posts.txt"
 touch "$post_database"
 
-# Initialize messages database (a text file)
-message_database="messages.txt"
-touch "$message_database"
 
+# Directory to store user-specific messages
+message_directory="messages"
+mkdir -p "$message_directory"
 
 # Function to register a new user
 register_user() {
@@ -19,7 +19,7 @@ register_user() {
     read username
 
     # Check if the username already exists
-    if grep -q "^$username$" "$user_database"; then
+    if grep -q "^$username:" "$user_database"; then
         echo "Username already exists. Please choose a different one."
         return
     fi
@@ -32,6 +32,7 @@ register_user() {
 
 # Function to log in
 login() {
+    clear
     echo "Enter your username:"
     read username
 
@@ -41,7 +42,7 @@ login() {
         read -s password
 
         # Verify the password
-        if grep -q "^$username:$password$" "$user_database"; then
+        if grep -q "^$username:$password" "$user_database"; then
             echo "Login successful."
             menu
         else
@@ -52,22 +53,9 @@ login() {
     fi
 }
 
-# Function to post an update
-post_update() {
-    echo "Enter your update:"
-    read update
-    echo "$(date '+%Y-%m-%d %H:%M:%S') $username: $update" >> "$post_database"
-    echo "Update posted."
-}
-
-# Function to view the timeline
-view_timeline() {
-    echo "Timeline:"
-    cat "$post_database"
-}
-
 # Function to send a message
 send_message() {
+    clear
     echo "Enter the recipient's username:"
     read recipient
 
@@ -79,18 +67,40 @@ send_message() {
 
     echo "Enter your message:"
     read message
-    echo "$(date '+%Y-%m-%d %H:%M:%S') $username -> $recipient: $message" >> "$message_database"
-    echo "Message sent."
+
+    # Save the message to the recipient's message file
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $username: $message" >> "$message_directory/$recipient.txt"
+    echo "Message sent to $recipient."
 }
 
 # Function to view messages
 view_messages() {
+    clear
     echo "Your messages:"
-    grep "$username ->" "$message_database" | sed "s/$username -> //"
+    cat "$message_directory/$username.txt"
+    
+}
+
+
+# Function to post an update
+post_update() {
+    clear
+    echo "Enter your update:"
+    read update
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $username: $update" >> "$post_database"
+    echo "Update posted."
+}
+
+# Function to view the timeline
+view_timeline() {
+    clear
+    echo "Timeline:"
+    cat "$post_database"
 }
 
 # Main menu
 menu() {
+    clear
     while true; do
         echo "ShellBook - Menu"
         echo "1. Post an update"
@@ -99,6 +109,7 @@ menu() {
         echo "4. View messages"
         echo "5. Logout"
         echo "6. Exit"
+        echo "Enter your choice: "
         read choice
 
         case $choice in
@@ -115,6 +126,7 @@ menu() {
 
 # Main program loop
 while true; do
+    clear
     echo "ShellBook"
     echo "1. Register"
     echo "2. Login"
